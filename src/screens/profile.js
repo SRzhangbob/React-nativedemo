@@ -87,13 +87,13 @@ class RootView extends Component{
                      }}
                       placeholder="请输入验证码"
                   />
-                  <VisibleButton bVisible={this.state.PWRight} btnFunc={this._getPhoneCode}/>
-                  {/* <ButtonView 
+                  {/* <VisibleButton bVisible={this.state.PWRight} btnFunc={this._getPhoneCode}/> */}
+                  <ButtonView 
                       btnName='获取验证码'
                       btnStyle = {{width: 90,marginRight: 10, backgroundColor: '#D6D6D6'}}
                       onPress = {this._getPhoneCode}
                       textStyle = {{color:'gray', justifyContent: 'flex-end',}}
-                  ></ButtonView> */}
+                  ></ButtonView>
               </View>
 
               {/* <View style = {[styles.lineStyle, {top: 99}]}>11 </View> */}
@@ -112,12 +112,12 @@ class RootView extends Component{
               textStyle = {{color:'#D6D6D6', justifyContent: 'flex-end',}}
           ></ButtonView>
 
-          <ButtonView 
+          {/* <ButtonView 
               btnName= {this.state.changeBtnTitle}
               btnStyle = {styles.SIMBtnStyle}
               onPress = {this._onClickSIM}
               textStyle = {{color:'#D6D6D6'}}
-          ></ButtonView>
+          ></ButtonView> */}
 
       </View>
     );
@@ -187,15 +187,6 @@ class RootView extends Component{
       });
   }
 }
-
-// export default createStackNavigator({
-//   Home: {
-//     screen: RootView
-//   },
-//   Details:{
-//     screen: RegistView
-//   },
-// });
 
 export default RootView;
 
