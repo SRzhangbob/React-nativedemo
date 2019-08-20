@@ -25,13 +25,13 @@ const TabNavigator = createBottomTabNavigator({
     //         tabBarIcon: ({ tintColor }) => <Icon name="search" color={tintColor} />
     //     }
     //   },
-    //   FavouritesScreen: {
-    //     screen: FavouritesScreen,
-    //     navigationOptions: {
-    //        // tabBarLabel: 'FavouritesScreen',
-    //         tabBarIcon: ({ tintColor }) => <Icon name="favourites" color={tintColor} />,
-    //     },
-    //   },
+      FavouritesScreen: {
+        screen: FavouritesScreen,
+        navigationOptions: {
+           // tabBarLabel: 'FavouritesScreen',
+            tabBarIcon: ({ tintColor }) => <Icon name="favourites" color={tintColor} />,
+        },
+      },
       ProfileScreen: {
         screen: ProfileScreen,
         navigationOptions: {

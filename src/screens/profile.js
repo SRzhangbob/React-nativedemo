@@ -27,13 +27,32 @@ const SCREEN_WIDTH = width;
 
 const PWRightWid = 100;
 
+class Verify
+{
+  /**
+* 验证是否为手机号
+* @param {*} str
+*/
+  static isPoneAvailable(str) {
+    let myreg = /^[1][3,4,5,7,8][0-9]{9}$/;
+    if (str.length == 0 || str == null) {
+    return false;
+    } else if (!myreg.test(str)) {
+    return false;
+    } else {
+    return true;
+    }
+  }
 
+}
 
 class RootView extends Component{
 
+  
   constructor(props) {
     super(props);
 
+    this.intervalId = 0;
     this.state = { 
       userNameTip: "手机号",
       userName: "",
@@ -41,6 +60,8 @@ class RootView extends Component{
       userPW: "",
       changeBtnTitle: "使用账号密码登录",
       PWRight: 0,
+      Timer:10,
+      bClickCode:false,
     };
 
 
@@ -51,7 +72,7 @@ class RootView extends Component{
     this._onClickSIM = this._onClickSIM.bind(this); //点击切换账号手机号登录
     this._onClickForgetPW = this._onClickForgetPW.bind(this); //点击忘记密码
     this._hiddenGetCodeBtn = this._hiddenGetCodeBtn.bind(this); //隐藏获取验证码
-
+    this._gg = this._gg.bind(this); //隐藏获取验证码
   }
 
   static navigationOptions = {
@@ -74,7 +95,6 @@ class RootView extends Component{
                   />
               </View>
               
-              {/* <View style = {[styles.lineStyle, {top: 49.75}]}> </View> */}
 
               <View style = {[styles.inputCellStyle, { height: 49.75, top: 50.25, right: this.state.PWRight, justifyContent: 'space-between'}]}>
                   <Text style={styles.welcome}>
@@ -87,16 +107,9 @@ class RootView extends Component{
                      }}
                       placeholder="请输入验证码"
                   />
-                  {/* <VisibleButton bVisible={this.state.PWRight} btnFunc={this._getPhoneCode}/> */}
-                  <ButtonView 
-                      btnName='获取验证码'
-                      btnStyle = {{width: 90,marginRight: 10, backgroundColor: '#D6D6D6'}}
-                      onPress = {this._getPhoneCode}
-                      textStyle = {{color:'gray', justifyContent: 'flex-end',}}
-                  ></ButtonView>
+                  <VisibleButton bVisible={this.state.PWRight} btnFunc={this._getPhoneCode} Timer={this.state.Timer}/>
               </View>
 
-              {/* <View style = {[styles.lineStyle, {top: 99}]}>11 </View> */}
           </View>
 
           <ButtonView 
@@ -122,6 +135,24 @@ class RootView extends Component{
       </View>
     );
   }
+  
+  _gg() {
+    // 每1000毫秒更新一次倒计时
+    if(this.state.bClickCode)
+    {
+        this.intervalId = setInterval(() => {
+        this.setState(previousState => {
+          if (previousState.Timer>0)
+          {
+            if(previousState.bClickCode)
+                return { Timer: previousState.Timer-1};
+          }
+          return { Timer:10,bClickCode:false,
+            PWRight: 0 };
+        });
+      }, 1000);
+    }
+  }
 
     _getUserName = () => {
     alert('A name was submitted: ' + this.state.userName);
@@ -132,13 +163,29 @@ class RootView extends Component{
   }
 
   _getPhoneCode = () => {
-    alert('获取验证码')
+    if(Verify.isPoneAvailable(this.state.userName))
+    {
+      alert('获取验证码1'+ this.state.userName, this.intervalId);
+      this.setState({PWRight: this.state.PWRight == PWRightWid ? 0 : PWRightWid});
+      //setState调用后并不是立即执行，需要走完react的生命周期，
+      // 到到render的时候，state的值才改变。解决方法，setState的第
+      // 二个参数，是回调函数，把state改变后的需要执行的代码放在回调
+      // 函数中，这样就可以保证，setState生效后，才执行，因此可以实现
+      // 改变state生效
+      window.clearInterval(this.intervalId);
+      this.setState({bClickCode:true}, () => {
+        this._gg();
+      });
+    }
+    else{
+      alert('手机号${this.state.userName}格式错误，请重新输入');
+    }
   }
 
   _onClickLogin = () => {
     var usrInfo = "用户名：" + this.state.userName + "密码：" + this.state.userPW
     Alert.alert(usrInfo);
-
+    this.props.navigation.navigate('FavouritesScreen');
   };
 
   _onClickSIM = () =>{
@@ -154,18 +201,18 @@ class RootView extends Component{
   };
 
   _hiddenGetCodeBtn = () => {
-    if (this.state.PWRight == PWRightWid){
-        return (
-            <ButtonView 
-                btnName='获取验证码'
-                btnStyle = {{alignItems: 'flex-end', backgroundColor: '#D6D6D6'}}
-                onPress = {this._getPhoneCode}
-                textStyle = {{color:'gray', justifyContent: 'flex-end',}}
-            ></ButtonView>
-        );
-    }else{
+    // if (this.state.PWRight == PWRightWid){
+    //     return (
+    //         <ButtonView 
+    //             btnName='获取验证码'
+    //             btnStyle = {{alignItems: 'flex-end', backgroundColor: '#D6D6D6'}}
+    //             onPress = {this._getPhoneCode}
+    //             textStyle = {{color:'gray', justifyContent: 'flex-end',}}
+    //         ></ButtonView>
+    //     );
+    // }else{
       return null;
-    }
+    // }
   }
 
 
@@ -190,23 +237,34 @@ class RootView extends Component{
 
 export default RootView;
 
-const VisibleButton = ({bVisible, btnFunc})=>{
+const VisibleButton = ({bVisible, btnFunc, Timer})=>{
     if (bVisible == PWRightWid){
-        return (
-            <ButtonView 
-                btnName='获取验证码'
-                btnStyle = {{width: 90,marginRight: 10,alignItems: 'flex-end', backgroundColor: '#D6D6D6'}}
-                onPress = {btnFunc}
-                textStyle = {{color:'gray', justifyContent: 'flex-end',}}
-            ></ButtonView>
-        );
+        return (<View style = {styles.Textcontainer}><Text style = 
+          {{width: 120,marginRight: -80, alignItems: 'flex-end',backgroundColor: '#D6D6D6'}}
+          textStyle = {{color:'gray', justifyContent: 'flex-end',alignItems:"center"}}> 重新获取{Timer}s</Text>
+                    </View>);
+
     }else{
-      return null;
+
+      return (
+        <ButtonView 
+            btnName='获取验证码'
+            btnStyle = {{width: 90,marginRight: 10,alignItems: 'flex-end', backgroundColor: '#D6D6D6'}}
+            onPress = {btnFunc}
+            textStyle = {{color:'gray', justifyContent: 'flex-end',}}
+        ></ButtonView>
+    );
+
     }
 
 }
 
 const styles = StyleSheet.create({
+  Textcontainer: {
+    flexDirection:'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+},
   container: {
     flex: 1,
     backgroundColor: '#F5FCFF',
