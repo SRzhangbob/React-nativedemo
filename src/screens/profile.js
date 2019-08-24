@@ -27,6 +27,7 @@ const SCREEN_WIDTH = width;
 
 const PWRightWid = 100;
 
+
 class Verify
 {
   /**
@@ -52,7 +53,7 @@ class RootView extends Component{
   constructor(props) {
     super(props);
 
-    this.intervalId = 0;
+    this.intervalId = 0; //定时器id
     this.state = { 
       userNameTip: "手机号",
       userName: "",
@@ -72,7 +73,7 @@ class RootView extends Component{
     this._onClickSIM = this._onClickSIM.bind(this); //点击切换账号手机号登录
     this._onClickForgetPW = this._onClickForgetPW.bind(this); //点击忘记密码
     this._hiddenGetCodeBtn = this._hiddenGetCodeBtn.bind(this); //隐藏获取验证码
-    this._gg = this._gg.bind(this); //隐藏获取验证码
+    this._hiddenButton = this._hiddenButton.bind(this); //隐藏获取验证码
   }
 
   static navigationOptions = {
@@ -136,7 +137,7 @@ class RootView extends Component{
     );
   }
   
-  _gg() {
+  _hiddenButton() {
     // 每1000毫秒更新一次倒计时
     if(this.state.bClickCode)
     {
@@ -165,16 +166,16 @@ class RootView extends Component{
   _getPhoneCode = () => {
     if(Verify.isPoneAvailable(this.state.userName))
     {
-      alert('获取验证码1'+ this.state.userName, this.intervalId);
+      alert('获取验证码'+ this.state.userName, this.intervalId);
       this.setState({PWRight: this.state.PWRight == PWRightWid ? 0 : PWRightWid});
       //setState调用后并不是立即执行，需要走完react的生命周期，
-      // 到到render的时候，state的值才改变。解决方法，setState的第
+      // 等到render的时候，state的值才改变。解决方法，setState的第
       // 二个参数，是回调函数，把state改变后的需要执行的代码放在回调
       // 函数中，这样就可以保证，setState生效后，才执行，因此可以实现
       // 改变state生效
-      window.clearInterval(this.intervalId);
+      clearInterval(this.intervalId);
       this.setState({bClickCode:true}, () => {
-        this._gg();
+        this._hiddenButton();
       });
     }
     else{
